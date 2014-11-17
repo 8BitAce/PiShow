@@ -70,11 +70,14 @@ class Slideshow:
     def update_files(self):
         """Returns True if fileset changed"""
         db_files = self.dbc.get_file_list(self.directory)
-        diff_set = set(db_files) - self.file_set
-        if diff_set != set():
+        new_files = set(db_files) - self.file_set
+        old_files = self.file_set - set(db_files)
+        if new_files != set() or old_files != set():
             self.file_set = db_files
-            for filename in diff_set:
+            for filename in new_files:
                 self.dbc.get_file(filename)
+            for filename in old_files:
+                os.remove("Images/" + filename)
             print "Fileset changed."
             print self.file_set
             return True
