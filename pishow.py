@@ -73,7 +73,7 @@ class Slideshow:
         new_files = set(db_files) - self.file_set
         old_files = self.file_set - set(db_files)
         if new_files != set() or old_files != set():
-            self.file_set = db_files
+            self.file_set = set(db_files)
             for filename in new_files:
                 self.dbc.get_file(filename)
             for filename in old_files:
