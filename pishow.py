@@ -62,7 +62,7 @@ class Slideshow:
         self.update_files()
         child = subprocess.Popen(["feh", "-FY", "-D", str(delay), "Images"])
         while(True):
-            if(self.update_files):
+            if(self.update_files()):
                 child.kill()
                 child = subprocess.Popen(["feh", "-FY", "-D", str(delay), "Images"])
             sleep(60)
