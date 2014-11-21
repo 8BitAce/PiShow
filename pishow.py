@@ -81,7 +81,7 @@ class Slideshow:
                 self.dbc.get_file(filename, self.local_directory)
             for filename in old_files:
                 os.remove(self.local_directory + filename)
-            print "Fileset changed."
+            print "Fileset changed:"
             print self.file_set
             return True
         return False
