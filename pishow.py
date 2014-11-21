@@ -9,7 +9,7 @@ APP_KEY = ''
 APP_SECRET = ''
 
 DB_PATH = "Photos/Sample Album"
-DELAY = 10
+DELAY = 5
 
 class DropboxConnector:
     TOKEN_FILE = "token_store.txt"
