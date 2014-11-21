@@ -1,6 +1,7 @@
 import locale
 import os
 import subprocess
+import sys
 
 from dropbox import client, session
 from time import sleep
@@ -33,7 +34,8 @@ class DropboxConnector:
             else:
                 print "Malformed access token in %r." % (self.TOKEN_FILE,)
         except IOError:
-            pass # don't worry if it's not there
+            print "Not authorized (no token_store.txt)."
+            sys.exit()
 
     def get_file_list(self, directory):
         resp = self.api_client.metadata(directory)
@@ -94,4 +96,4 @@ def main(argv):
     slideshow.run_show(DELAY)
 
 if __name__ == "__main__":
-	main(argv[1])
+	main(sys.argv[1])
