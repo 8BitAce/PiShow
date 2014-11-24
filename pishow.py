@@ -99,6 +99,7 @@ class Slideshow:
         """Returns true if there is a new config"""
         config_metadata = self.dbc.get_metadata("config")
         if(config_metadata["modified"] != self.config_date):
+            print "Config changed"
             self.config_date = config_metadata["modified"]
             self.dbc.get_file("config", ".")
             self.config.reload("config")
