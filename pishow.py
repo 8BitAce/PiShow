@@ -54,12 +54,19 @@ class DropboxConnector:
         f, metadata = self.api_client.get_file_and_metadata(self.current_path + "/" + filename)
         to_file.write(f.read())
 
+    def get_metadata(self, filename):
+        f, metadata = self.api_client.get_file_and_metadata(self.current_path + "/" + filename)
+        return metadata
+
 class Slideshow:
     def __init__(self, dbc, local_dir):
         self.file_set = set([f for f in os.listdir(self.local_directory) if os.path.isfile(os.path.join(self.local_directory,f))])
         self.dbc = dbc
         self.remote_directory = DB_PATH
         self.local_directory = local_dir
+        self.config = Config()
+        self.config.reload()
+        self.config_date = ""
 
     def run_show(self, delay):
         self.update_files()
@@ -68,6 +75,8 @@ class Slideshow:
             if(self.update_files()):
                 child.kill()
                 child = subprocess.Popen(["feh", "-FY", "-D", str(delay), self.local_directory])
+            if(self.check_config()):
+                child.kill()
             sleep(60)
 
     def update_files(self):
@@ -85,6 +94,38 @@ class Slideshow:
             print self.file_set
             return True
         return False
+
+    def check_config(self):
+        """Returns true if there is a new config"""
+        config_metadata = self.dbc.get_metadata("config")
+        if(config_metadata["modified"] != self.config_date):
+            self.config_date = config_metadata["modified"]
+            self.dbc.get_file("config", ".")
+            self.config.reload("config")
+            return True
+
+class Config:
+    def __init__(self):
+        self.dict = dict()
+
+    def reload(self, filename):
+        config_file = None
+        try:
+            config_file = open(filename, "r")
+        except:
+            print "No config in current directory"
+            sys.exit()
+
+        config_text = config_file.readlines()
+        config_file.close()
+
+        for line in config_text:
+            if "delay" in line:
+                delay = line.split()[1]
+                self.dict["delay"] = int(delay)
+
+    def delay(self):
+        return self.dict["delay"] if "delay" in self.dict.keys() else 10
 
 def main(argv):
     if(argv == None):
