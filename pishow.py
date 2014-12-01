@@ -4,7 +4,7 @@ import re
 import subprocess
 import sys
 
-from dropbox import client, session
+from dropbox import client, session, rest
 from time import sleep
 
 APP_KEY = ''
@@ -16,8 +16,9 @@ DELAY = 5
 class DropboxConnector:
     TOKEN_FILE = "token_store.txt"
 
-    def __init__(self, app_key, app_secret):
-        self.current_path = DB_PATH
+    def __init__(self, app_key, app_secret, local_path, db_path):
+        self.current_path = db_path
+	self.local_directory = local_path
 
         self.api_client = None
         try:
@@ -35,8 +36,36 @@ class DropboxConnector:
             else:
                 print "Malformed access token in %r." % (self.TOKEN_FILE,)
         except IOError:
-            print "Not authorized (no token_store.txt)."
+            print "Not authorized. Starting login process."
+            self.do_login()
+
+    def do_login(self):
+        """log in to a Dropbox account"""
+        key_file = None
+        try:
+	    key_file = open("app_key.txt", "r")
+        except IOError:
+            print "No app_key.txt. Exiting."
             sys.exit()
+        keys = key_file.readlines()
+        app_key = keys[0].strip()
+        app_secret = keys[1].strip()
+        flow = client.DropboxOAuth2FlowNoRedirect(app_key, app_secret)
+        authorize_url = flow.start()
+        sys.stdout.write("1. Go to: " + authorize_url + "\n")
+        sys.stdout.write("2. Click \"Allow\" (you might have to log in first).\n")
+        sys.stdout.write("3. Copy the authorization code.\n")
+        code = raw_input("Enter the authorization code here: ").strip()
+
+        try:
+            access_token, user_id = flow.finish(code)
+        except rest.ErrorResponse, e:
+            self.stdout.write('Error: %s\n' % str(e))
+            return
+
+        with open(self.TOKEN_FILE, 'w') as f:
+            f.write('oauth2:' + access_token)
+        self.api_client = client.DropboxClient(access_token)
 
     def get_file_list(self, directory):
         resp = self.api_client.metadata(directory)
@@ -50,20 +79,19 @@ class DropboxConnector:
             return files
 
     def get_file(self, filename, directory):
-	#TODO: Fix hardcoded dir here
-        to_file = open(os.path.expanduser("Images/" + filename), "wb")
+        to_file = open(os.path.expanduser(self.local_directory + filename), "wb")
 
         f, metadata = self.api_client.get_file_and_metadata(self.current_path + "/" + filename)
         to_file.write(f.read())
-
+        
     def get_metadata(self, filename):
         f, metadata = self.api_client.get_file_and_metadata(self.current_path + "/" + filename)
         return metadata
 
 class Slideshow:
-    def __init__(self, dbc, local_dir):
+    def __init__(self, dbc, local_dir, db_dir):
         self.dbc = dbc
-        self.remote_directory = DB_PATH
+        self.remote_directory = db_dir
         self.local_directory = local_dir
         self.file_set = set([f for f in os.listdir(self.local_directory) if os.path.isfile(os.path.join(self.local_directory,f))])
         self.config = Config()
@@ -99,12 +127,16 @@ class Slideshow:
 
     def check_config(self):
         """Returns true if there is a new config"""
-        config_metadata = self.dbc.get_metadata("config.txt")
+        try:
+            config_metadata = self.dbc.get_metadata("config.txt")
+        except rest.ErrorResponse:
+            print "No config.txt in Dropbox directory. Exiting."
+            sys.exit()
         if(config_metadata["modified"] != self.config_date):
             print "Config changed"
             self.config_date = config_metadata["modified"]
             self.dbc.get_file("config.txt", ".")
-            self.config.reload("Images/config.txt")
+            self.config.reload(self.local_directory + "/" + "config.txt")
             return True
 
 class Config:
@@ -131,13 +163,14 @@ class Config:
         return self.dict["delay"] if "delay" in self.dict.keys() else 10
 
 def main(argv):
-    if(argv == None):
-        print "Usage: pishow.py <local_image_directory>"
+    if(len(argv) < 3):
+        print "Usage: pishow.py <local_image_directory> <dropbox_image_directory>"
         return
-    local_directory = argv + "/" if argv[-1] != "/" else argv
-    dbc = DropboxConnector(APP_KEY, APP_SECRET)
-    slideshow = Slideshow(dbc, local_directory)
+    local_directory = argv[1] + "/" if argv[1][-1] != "/" else argv[1]
+    db_directory = argv[2] + "/" if argv[2][-1] != "/" else argv[2]
+    dbc = DropboxConnector(APP_KEY, APP_SECRET, local_directory, db_directory)
+    slideshow = Slideshow(dbc, local_directory, db_directory)
     slideshow.run_show()
 
 if __name__ == "__main__":
-	main(sys.argv[1])
+	main(sys.argv)
