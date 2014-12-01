@@ -1,5 +1,6 @@
 import locale
 import os
+import re
 import subprocess
 import sys
 
@@ -15,7 +16,7 @@ DELAY = 5
 class DropboxConnector:
     TOKEN_FILE = "token_store.txt"
 
-    def __init__(self,app_key, app_secret):
+    def __init__(self, app_key, app_secret):
         self.current_path = DB_PATH
 
         self.api_client = None
@@ -49,7 +50,8 @@ class DropboxConnector:
             return files
 
     def get_file(self, filename, directory):
-        to_file = open(os.path.expanduser(self.local_directory + filename), "wb")
+	#TODO: Fix hardcoded dir here
+        to_file = open(os.path.expanduser("Images/" + filename), "wb")
 
         f, metadata = self.api_client.get_file_and_metadata(self.current_path + "/" + filename)
         to_file.write(f.read())
@@ -65,16 +67,16 @@ class Slideshow:
         self.local_directory = local_dir
         self.file_set = set([f for f in os.listdir(self.local_directory) if os.path.isfile(os.path.join(self.local_directory,f))])
         self.config = Config()
-        self.config.reload("config")
         self.config_date = ""
 
-    def run_show(self, delay):
+    def run_show(self):
         self.update_files()
-        child = subprocess.Popen(["feh", "-FY", "-D", str(delay), self.local_directory])
+	self.check_config()
+        child = subprocess.Popen(["feh", "-FY", "-D", str(self.config.delay()), self.local_directory])
         while(True):
             if(self.update_files()):
                 child.kill()
-                child = subprocess.Popen(["feh", "-FY", "-D", str(delay), self.local_directory])
+                child = subprocess.Popen(["feh", "-FY", "-D", str(self.config.delay()), self.local_directory])
             if(self.check_config()):
                 child.kill()
             sleep(60)
@@ -97,12 +99,12 @@ class Slideshow:
 
     def check_config(self):
         """Returns true if there is a new config"""
-        config_metadata = self.dbc.get_metadata("config")
+        config_metadata = self.dbc.get_metadata("config.txt")
         if(config_metadata["modified"] != self.config_date):
             print "Config changed"
             self.config_date = config_metadata["modified"]
-            self.dbc.get_file("config", ".")
-            self.config.reload("config")
+            self.dbc.get_file("config.txt", ".")
+            self.config.reload("Images/config.txt")
             return True
 
 class Config:
@@ -121,7 +123,7 @@ class Config:
         config_file.close()
 
         for line in config_text:
-            if "delay" in line:
+            if re.match(r'^delay [0-9+]', line):
                 delay = line.split()[1]
                 self.dict["delay"] = int(delay)
 
@@ -135,7 +137,7 @@ def main(argv):
     local_directory = argv + "/" if argv[-1] != "/" else argv
     dbc = DropboxConnector(APP_KEY, APP_SECRET)
     slideshow = Slideshow(dbc, local_directory)
-    slideshow.run_show(DELAY)
+    slideshow.run_show()
 
 if __name__ == "__main__":
 	main(sys.argv[1])
