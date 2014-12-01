@@ -60,10 +60,10 @@ class DropboxConnector:
 
 class Slideshow:
     def __init__(self, dbc, local_dir):
-        self.file_set = set([f for f in os.listdir(self.local_directory) if os.path.isfile(os.path.join(self.local_directory,f))])
         self.dbc = dbc
         self.remote_directory = DB_PATH
         self.local_directory = local_dir
+        self.file_set = set([f for f in os.listdir(self.local_directory) if os.path.isfile(os.path.join(self.local_directory,f))])
         self.config = Config()
         self.config.reload()
         self.config_date = ""
