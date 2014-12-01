@@ -65,7 +65,7 @@ class Slideshow:
         self.local_directory = local_dir
         self.file_set = set([f for f in os.listdir(self.local_directory) if os.path.isfile(os.path.join(self.local_directory,f))])
         self.config = Config()
-        self.config.reload()
+        self.config.reload("config")
         self.config_date = ""
 
     def run_show(self, delay):
