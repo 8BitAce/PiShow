@@ -134,7 +134,7 @@ def main(argv):
         return
     local_directory = argv + "/" if argv[-1] != "/" else argv
     dbc = DropboxConnector(APP_KEY, APP_SECRET)
-    slideshow = Slideshow(dbc, local_dir)
+    slideshow = Slideshow(dbc, local_directory)
     slideshow.run_show(DELAY)
 
 if __name__ == "__main__":
