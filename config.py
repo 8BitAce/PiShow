@@ -7,6 +7,10 @@ import sys
 from dropbox import client, session, rest
 from time import sleep
 
+from config import *
+from dropboxconnector import *
+from slideshow import *
+
 class Config:
     def __init__(self):
         self.dict = dict()

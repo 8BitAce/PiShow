@@ -7,6 +7,10 @@ import sys
 from dropbox import client, session, rest
 from time import sleep
 
+from config import *
+from dropboxconnector import *
+from slideshow import *
+
 class DropboxConnector:
     TOKEN_FILE = "token_store.txt"
 
