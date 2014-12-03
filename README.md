@@ -11,7 +11,7 @@ PiShow listens to a specified Dropbox folder and displays images uploaded there 
 1. Create a Dropbox account and add a folder that will contain uploaded images.
 2. In the pishow/ directory create a file named `app_key.txt` with the first line being the app key, the second being the app_secret.
 3. Create a local directory on the Pi for the images (probably in pishow/).
-4. Create a text file named 'config.txt' and upload it to that Dropbox folder in step 2. (See Configuration below).
+4. Create a text file named `config.txt` and upload it to that Dropbox folder in step 2. (See Configuration below).
 5. Run the program like so: `python pishow.py <local_directory> <remote_directory>` (e.x.: `python pishow.py Images Photos/PiImages`)
 6. For the first run the program will walk you through authenticating with Dropbox. Subsequent runs will already be authenticated.
 7. Done!  
