@@ -19,3 +19,4 @@ PiShow listens to a specified Dropbox folder and displays images uploaded there 
 ### Configuration ###
 Configuration is done using the file 'config.txt' that resides with the images in your Dropbox folder. Each line of the configuration file can specify a variable followed by a space and then the value. The variables are as follows (value types are in <>):
 delay<integer> The amount of time that elapses before transitioning images.
+update_interval<integer> The amount of time that elapses before pishow checks for new files/config.
