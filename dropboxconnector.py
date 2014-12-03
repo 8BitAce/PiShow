@@ -1,3 +1,12 @@
+import locale
+import os
+import re
+import subprocess
+import sys
+
+from dropbox import client, session, rest
+from time import sleep
+
 class DropboxConnector:
     TOKEN_FILE = "token_store.txt"
 
