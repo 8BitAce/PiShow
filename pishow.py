@@ -10,15 +10,12 @@ from time import sleep
 APP_KEY = ''
 APP_SECRET = ''
 
-DB_PATH = "Photos/Sample Album"
-DELAY = 5
-
 class DropboxConnector:
     TOKEN_FILE = "token_store.txt"
 
     def __init__(self, app_key, app_secret, local_path, db_path):
         self.current_path = db_path
-	self.local_directory = local_path
+        self.local_directory = local_path
 
         self.api_client = None
         try:
@@ -79,7 +76,12 @@ class DropboxConnector:
             return files
 
     def get_file(self, filename, directory):
-        to_file = open(os.path.expanduser(self.local_directory + filename), "wb")
+        to_file = None
+        try:
+            to_file = open(os.path.expanduser(self.local_directory + filename), "wb")
+        except IOError:
+            print self.local_directory + " is missing!"
+            return
 
         f, metadata = self.api_client.get_file_and_metadata(self.current_path + "/" + filename)
         to_file.write(f.read())
@@ -107,7 +109,7 @@ class Slideshow:
                 child = subprocess.Popen(["feh", "-FY", "-D", str(self.config.delay()), self.local_directory])
             if(self.check_config()):
                 child.kill()
-            sleep(60)
+            sleep(self.config.update_interval())
 
     def update_files(self):
         """Returns True if fileset changed"""
@@ -126,7 +128,7 @@ class Slideshow:
         return False
 
     def check_config(self):
-        """Returns true if there is a new config"""
+        """Returns True if there is a new config"""
         try:
             config_metadata = self.dbc.get_metadata("config.txt")
         except rest.ErrorResponse:
@@ -161,6 +163,9 @@ class Config:
 
     def delay(self):
         return self.dict["delay"] if "delay" in self.dict.keys() else 10
+
+    def update_interval(self):
+        return self.dict["update_interval"] if "update_interval" in self.dict.keys() else 60
 
 def main(argv):
     if(len(argv) < 3):
