@@ -157,9 +157,12 @@ class Config:
         config_file.close()
 
         for line in config_text:
-            if re.match(r'^delay [0-9+]', line):
+            if re.match(r'^delay [0-9]+', line):
                 delay = line.split()[1]
                 self.dict["delay"] = int(delay)
+            if re.match(r'^update_interval [0-9]+', line):
+                update_interval = line.split()[1]
+                self.dict["update_interval"] = int(update_interval)
 
     def delay(self):
         return self.dict["delay"] if "delay" in self.dict.keys() else 10
