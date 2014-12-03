@@ -1,3 +1,9 @@
+import locale
+import os
+import sys
+
+from dropbox import client
+
 class DropboxConnector:
     TOKEN_FILE = "token_store.txt"
 

@@ -1,3 +1,11 @@
+import os
+import subprocess
+import sys
+
+from time import sleep
+
+from config import *
+
 class Slideshow:
     def __init__(self, dbc, local_dir, db_dir):
         self.dbc = dbc
