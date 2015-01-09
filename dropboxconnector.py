@@ -7,7 +7,7 @@ from dropbox import client, session
 class DropboxConnector:
     TOKEN_FILE = "token_store.txt"
 
-    def __init__(self, app_key, app_secret, local_path, db_path):
+    def __init__(self, local_path, db_path):
         self.current_path = db_path
         self.local_directory = local_path
 

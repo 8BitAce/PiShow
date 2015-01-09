@@ -11,16 +11,13 @@ from config import *
 from dropboxconnector import *
 from slideshow import *
 
-APP_KEY = ''
-APP_SECRET = ''
-
 def main(argv):
     if(len(argv) < 3):
         print "Usage: pishow.py <local_image_directory> <dropbox_image_directory>"
         return
     local_directory = argv[1] + "/" if argv[1][-1] != "/" else argv[1]
     db_directory = argv[2] + "/" if argv[2][-1] != "/" else argv[2]
-    dbc = DropboxConnector(APP_KEY, APP_SECRET, local_directory, db_directory)
+    dbc = DropboxConnector(local_directory, db_directory)
     slideshow = Slideshow(dbc, local_directory, db_directory)
     slideshow.run_show()
 
