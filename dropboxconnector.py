@@ -68,6 +68,9 @@ class DropboxConnector:
                 encoding = locale.getdefaultlocale()[1] or 'ascii'
                 files.append(('%s' % name).encode(encoding))
             return files
+        else:
+            return None
+
 
     def get_file(self, filename, directory):
         to_file = None
