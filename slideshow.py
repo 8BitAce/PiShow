@@ -30,7 +30,7 @@ class Slideshow:
     def update_files(self):
         """Returns True if fileset changed"""
         db_files = self.dbc.get_file_list(self.remote_directory)
-        if db_files == None:
+        if db_files is None:
             print "Could not get remote file list."
             return False
         new_files = set(db_files) - self.file_set
