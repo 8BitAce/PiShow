@@ -2,7 +2,7 @@ import locale
 import os
 import sys
 
-from dropbox import client
+from dropbox import client, session
 
 class DropboxConnector:
     TOKEN_FILE = "token_store.txt"
