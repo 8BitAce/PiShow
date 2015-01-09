@@ -15,11 +15,13 @@ class DropboxConnector:
         try:
             serialized_token = open(self.TOKEN_FILE).read()
             if serialized_token.startswith('oauth1:'):
-                access_key, access_secret = serialized_token[len('oauth1:'):].split(':', 1)
-                sess = session.DropboxSession(self.app_key, self.app_secret)
-                sess.set_token(access_key, access_secret)
-                self.api_client = client.DropboxClient(sess)
-                print "[loaded OAuth 1 access token]"
+                #access_key, access_secret = serialized_token[len('oauth1:'):].split(':', 1)
+                #sess = session.DropboxSession(self.app_key, self.app_secret)
+                #sess.set_token(access_key, access_secret)
+                #self.api_client = client.DropboxClient(sess)
+                #print "[loaded OAuth 1 access token]"
+                print "OAuth1 not supported."
+                sys.exit()
             elif serialized_token.startswith('oauth2:'):
                 access_token = serialized_token[len('oauth2:'):]
                 self.api_client = client.DropboxClient(access_token)
