@@ -30,11 +30,11 @@ class Slideshow:
         """
         self.update_files()
         self.check_config()
-        child = subprocess.Popen(["feh", "-FY", "-D", str(self.config.delay()), self.local_directory + "/*.{jpg,gif,png}"])
+        child = subprocess.Popen(["feh", "-FY", "-D", str(self.config.delay()), self.local_directory])
         while(True):
             if(self.update_files()):
                 child.kill()
-                child = subprocess.Popen(["feh", "-FY", "-D", str(self.config.delay()), self.local_directory + "/*.{jpg,gif,png}"])
+                child = subprocess.Popen(["feh", "-FY", "-D", str(self.config.delay()), self.local_directory])
             if(self.check_config()):
                 child.kill()
             sleep(self.config.update_interval())
