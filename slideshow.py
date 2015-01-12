@@ -38,7 +38,10 @@ class Slideshow:
         if new_files != set() or old_files != set():
             self.file_set = set(db_files)
             for filename in new_files:
-                self.dbc.get_file(filename, self.local_directory)
+                try:
+                    self.dbc.get_file(filename, self.local_directory)
+                except rest.ErrorResponse as e:
+                    print e.reason
             for filename in old_files:
                 os.remove(self.local_directory + filename)
             print "Fileset changed:"
@@ -56,6 +59,9 @@ class Slideshow:
         if(config_metadata["modified"] != self.config_date):
             print "Config changed"
             self.config_date = config_metadata["modified"]
-            self.dbc.get_file("config.txt", ".")
+            try:
+                self.dbc.get_file("config.txt", ".")
+            except rest.ErrorResponse as e:
+                print e.reason
             self.config.reload(self.local_directory + "/" + "config.txt")
             return True
