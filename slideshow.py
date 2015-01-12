@@ -8,6 +8,12 @@ from config import *
 
 class Slideshow:
     def __init__(self, dbc, local_dir, db_dir):
+        """
+        Parameters:
+            dbc: The dropboxconnector to use.
+            local_dir: The local directory that will hold the images.
+            db_dir: The remote Dropbox directory containing the images.
+        """
         self.dbc = dbc
         self.remote_directory = db_dir
         self.local_directory = local_dir
@@ -24,11 +30,11 @@ class Slideshow:
         """
         self.update_files()
         self.check_config()
-        child = subprocess.Popen(["feh", "-FY", "-D", str(self.config.delay()), self.local_directory])
+        child = subprocess.Popen(["feh", "-FY", "-D", str(self.config.delay()), self.local_directory + "/*.{jpg,gif,png}"])
         while(True):
             if(self.update_files()):
                 child.kill()
-                child = subprocess.Popen(["feh", "-FY", "-D", str(self.config.delay()), self.local_directory])
+                child = subprocess.Popen(["feh", "-FY", "-D", str(self.config.delay()), self.local_directory + "/*.{jpg,gif,png}"])
             if(self.check_config()):
                 child.kill()
             sleep(self.config.update_interval())
