@@ -8,6 +8,12 @@ class DropboxConnector:
     TOKEN_FILE = "token_store.txt"
 
     def __init__(self, local_path, db_path):
+        """
+        Parameters:
+            local_path: The directory in which to store images on the Pi
+            db_path: The remote directory located on the Dropbox account
+        Returns: None
+        """
         self.current_path = db_path
         self.local_directory = local_path
 
@@ -33,7 +39,12 @@ class DropboxConnector:
             self.do_login()
 
     def do_login(self):
-        """log in to a Dropbox account"""
+        """
+        Log in to a Dropbox account
+
+        Parameters: None
+        Returns: None
+        """
         key_file = None
         try:
 	    key_file = open("app_key.txt", "r")
@@ -61,6 +72,14 @@ class DropboxConnector:
         self.api_client = client.DropboxClient(access_token)
 
     def get_file_list(self, directory):
+        """
+        Gets a list of files in a Dropbox directory.
+
+        Parameters:
+            directory: The directory in which to get the filelist.
+        Returns: A filelist if it is found, otherwise None.
+        Raises: dropbox.rest.ErrorResponse
+        """
         resp = self.api_client.metadata(directory)
 
         if 'contents' in resp:
@@ -73,8 +92,15 @@ class DropboxConnector:
         else:
             return None
 
+    def get_file(self, filename):
+        """
+        Gets a file from the current Dropbox directory.
 
-    def get_file(self, filename, directory):
+        Parameters:
+            filename: The name of the desired file.
+        Returns: The file
+        Raises: dropbox.rest.ErrorResponse
+        """
         to_file = None
         try:
             to_file = open(os.path.expanduser(self.local_directory + filename), "wb")
@@ -86,5 +112,13 @@ class DropboxConnector:
         to_file.write(f.read())
         
     def get_metadata(self, filename):
+        """
+        Gets a file's metadata from the current Dropbox directory.
+
+        Parameters:
+            filename: The name of the desired file.
+        Returns: The file's metadata
+        Raises: dropbox.rest.ErrorResponse
+        """
         f, metadata = self.api_client.get_file_and_metadata(self.current_path + "/" + filename)
         return metadata

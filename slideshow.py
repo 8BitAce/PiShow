@@ -16,6 +16,12 @@ class Slideshow:
         self.config_date = ""
 
     def run_show(self):
+        """
+        Run loop for slideshow.
+
+        Parameters: None
+        Returns: None
+        """
         self.update_files()
         self.check_config()
         child = subprocess.Popen(["feh", "-FY", "-D", str(self.config.delay()), self.local_directory])
@@ -28,7 +34,13 @@ class Slideshow:
             sleep(self.config.update_interval())
 
     def update_files(self):
-        """Returns True if fileset changed"""
+        """
+        Updates fileset from Dropbox if it has changed.
+        Returns True if fileset changed.
+
+        Parameters: None
+        Returns: True if fileset has changed, otherwise False
+        """
         db_files = self.dbc.get_file_list(self.remote_directory)
         if db_files is None:
             print "Could not get remote file list."
@@ -39,7 +51,7 @@ class Slideshow:
             self.file_set = set(db_files)
             for filename in new_files:
                 try:
-                    self.dbc.get_file(filename, self.local_directory)
+                    self.dbc.get_file(filename)
                 except rest.ErrorResponse as e:
                     print e.reason
             for filename in old_files:
@@ -50,7 +62,13 @@ class Slideshow:
         return False
 
     def check_config(self):
-        """Returns True if there is a new config"""
+        """
+        Checks for a new config in Dropbox and downloads it.
+        Returns True if there is a new config.
+
+        Parameters: None
+        Returns: True if there is a new config, otherwise False
+        """
         try:
             config_metadata = self.dbc.get_metadata("config.txt")
         except rest.ErrorResponse:
@@ -60,8 +78,9 @@ class Slideshow:
             print "Config changed"
             self.config_date = config_metadata["modified"]
             try:
-                self.dbc.get_file("config.txt", ".")
+                self.dbc.get_file("config.txt")
             except rest.ErrorResponse as e:
                 print e.reason
             self.config.reload(self.local_directory + "/" + "config.txt")
             return True
+        return False
