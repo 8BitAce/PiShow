@@ -12,7 +12,7 @@ class DropboxConnector:
         Parameters:
             local_path: The directory in which to store images on the Pi
             db_path: The remote directory located on the Dropbox account
-        Returns: None
+        Returns: n/a
         """
         self.current_path = db_path
         self.local_directory = local_path
@@ -42,8 +42,8 @@ class DropboxConnector:
         """
         Log in to a Dropbox account
 
-        Parameters: None
-        Returns: None
+        Parameters: n/a
+        Returns: n/a
         """
         key_file = None
         try:

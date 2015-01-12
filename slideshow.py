@@ -19,8 +19,8 @@ class Slideshow:
         """
         Run loop for slideshow.
 
-        Parameters: None
-        Returns: None
+        Parameters: n/a
+        Returns: n/a
         """
         self.update_files()
         self.check_config()
@@ -38,7 +38,7 @@ class Slideshow:
         Updates fileset from Dropbox if it has changed.
         Returns True if fileset changed.
 
-        Parameters: None
+        Parameters: n/a
         Returns: True if fileset has changed, otherwise False
         """
         db_files = self.dbc.get_file_list(self.remote_directory)
@@ -55,7 +55,10 @@ class Slideshow:
                 except rest.ErrorResponse as e:
                     print e.reason
             for filename in old_files:
-                os.remove(self.local_directory + filename)
+                try:
+                    os.remove(self.local_directory + "/" + filename)
+                except:
+                    pass
             print "Fileset changed:"
             print self.file_set
             return True
@@ -66,7 +69,7 @@ class Slideshow:
         Checks for a new config in Dropbox and downloads it.
         Returns True if there is a new config.
 
-        Parameters: None
+        Parameters: n/a
         Returns: True if there is a new config, otherwise False
         """
         try:

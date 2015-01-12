@@ -6,6 +6,13 @@ class Config:
         self.dict = dict()
 
     def reload(self, filename):
+        """
+        Reads the configuration values from the config file.
+
+        Parameters:
+            filename: The name of the config file.
+        Returns: n/a
+        """
         config_file = None
         try:
             config_file = open(filename, "r")
