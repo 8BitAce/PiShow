@@ -1,17 +1,3 @@
 #!/bin/bash
 X > /dev/null 2>&1 &
-X_PID=$!
-DISPLAY=:0.0 /usr/bin/python2 pishow.py /home/pi/pishow/Images Photos/Sample\ Album
-
-control_c()
-{
-	echo -en "\n Killed \n"
-	kill $X_PID
-	killall python2
-	killall feh
-	exit 0
-}
-
-trap control_c SIGINT
-
-while true; do read x; done
+DISPLAY=:0.0 /usr/bin/python2 pishow.py /home/pi/pishow/Images Photos/Sample\ Album >> log.txt 2>&1 &
