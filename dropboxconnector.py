@@ -37,7 +37,8 @@ class DropboxConnector:
         except IOError:
             print "Not authorized. Use auth.sh to authenticate."
 
-    def do_login(self):
+    @classmethod
+    def do_login(cls):
         """
         Log in to a Dropbox account
 
@@ -63,12 +64,12 @@ class DropboxConnector:
         try:
             access_token, user_id = flow.finish(code)
         except rest.ErrorResponse, e:
-            self.stdout.write('Error: %s\n' % str(e))
+            sys.stdout.write('Error: %s\n' % str(e))
             return
 
         with open(self.TOKEN_FILE, 'w') as f:
             f.write('oauth2:' + access_token)
-        self.api_client = client.DropboxClient(access_token)
+        #self.api_client = client.DropboxClient(access_token)
 
     def get_file_list(self, directory):
         """
