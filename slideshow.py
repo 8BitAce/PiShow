@@ -90,6 +90,7 @@ class Slideshow:
                 self.dbc.get_file("config.txt")
             except rest.ErrorResponse as e:
                 print e.reason
+                return False
             self.config.reload(self.local_directory + "/" + "config.txt")
             return True
         return False
