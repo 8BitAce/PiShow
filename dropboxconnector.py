@@ -35,8 +35,7 @@ class DropboxConnector:
             else:
                 print "Malformed access token in %r." % (self.TOKEN_FILE,)
         except IOError:
-            print "Not authorized. Starting login process."
-            self.do_login()
+            print "Not authorized. Use auth.sh to authenticate."
 
     def do_login(self):
         """
