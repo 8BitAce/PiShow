@@ -7,9 +7,9 @@ PiShow is a simple Python application to display content using a Raspberry Pi.
 PiShow listens to a specified Dropbox folder and displays images uploaded there on the connected monitor.
 
 ### Requirements ###
-Python 2.x
-Dropbox python module
-feh
+Python 2.x  
+Dropbox python module  
+feh  
 
 ### How do I get set up? ###
 
