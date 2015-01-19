@@ -47,7 +47,10 @@ class Slideshow:
         Parameters: n/a
         Returns: True if fileset has changed, otherwise False
         """
-        db_files = self.dbc.get_file_list(self.remote_directory)
+        try:
+            db_files = self.dbc.get_file_list(self.remote_directory)
+        except rest.ErrorResponse as e:
+            print e.reason
         if db_files is None:
             print "Could not get remote file list."
             return False
