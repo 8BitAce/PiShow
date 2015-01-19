@@ -1,3 +1,0 @@
-#!/bin/bash
-X > /dev/null 2>&1 &
-DISPLAY=:0.0 /usr/bin/python2 pishow.py /home/pi/pishow/Images Photos/Sample\ Album >> log.txt 2>&1 &
