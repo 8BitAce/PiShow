@@ -17,8 +17,8 @@ feh
 2. In the pishow/ directory create a file named `app_key.txt` with the first line being the app key, the second being the app_secret.
 3. Create a local directory on the Pi for the images (probably in pishow/).
 4. Create a text file named `config.txt` and upload it to that Dropbox folder in step 2. (See Configuration below).
-5. Run the program like so: `python pishow.py <local_directory> <remote_directory>` (e.x.: `python pishow.py Images Photos/PiImages`)
-6. For the first run the program will walk you through authenticating with Dropbox. Subsequent runs will already be authenticated.
+5. If this is your first time running the program you will need to authenticate. Use the included `auth.sh.sample` or simply run `python -u pishow.py auth`.  
+6. Run the program like so: `python pishow.py <local_directory> <remote_directory>` (e.x.: `python pishow.py Images Photos/PiImages`)
 7. Done!  
 
 **NOTE**: You will most likely want to run the program in some sort of run script to have it shutdown gracefully. A sample bash script is included as exec.sh.sample. Simply copy the file to exec.sh and edit the appropriate directories in the file.
