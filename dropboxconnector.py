@@ -47,7 +47,7 @@ class DropboxConnector:
         """
         key_file = None
         try:
-	    key_file = open("app_key.txt", "r")
+	       key_file = open("app_key.txt", "r")
         except IOError:
             print "No app_key.txt. Exiting."
             sys.exit()
