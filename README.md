@@ -21,7 +21,7 @@ feh
 6. Run the program like so: `python pishow.py <local_directory> <remote_directory>` (e.x.: `python pishow.py Images Photos/PiImages`)
 7. Done!  
 
-**NOTE**: You will most likely want to run the program in some sort of run script to have it shutdown gracefully. A sample bash script is included as exec.sh.sample. Simply copy the file to exec.sh and edit the appropriate directories in the file.
+**NOTE**: You will most likely want to run the program in some sort of run script to have it shutdown gracefully. Two sample bash scripts are included as start.sh.sample and stop.sh.sample. Simply copy the file to exec.sh and edit the appropriate directories in the file.
 
 ### Configuration ###
 Configuration is done using the file 'config.txt' that resides with the images in your Dropbox folder. Each line of the configuration file can specify a variable followed by a space and then the value. The variables are as follows (value types are in <>):  
