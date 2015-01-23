@@ -1,6 +1,7 @@
 import locale
 import os
 import sys
+import time
 
 from dropbox import client, session
 
@@ -122,3 +123,52 @@ class DropboxConnector:
         """
         f, metadata = self.api_client.get_file_and_metadata(self.current_path + "/" + filename)
         return metadata
+
+    def poll(self, path):
+        had_changes = False
+        cursor = None
+        result = self.api_client.delta(cursor, path)
+        cursor = result['cursor']
+        if result['reset']:
+            print 'RESET'
+
+        if len(result['entries'] > 0):
+            had_changes = True
+
+        for path, metadata in result['entries']:
+            if metadata is not None:
+                print '%s was created/updated' % path
+            else:
+                print '%s was deleted' % path
+
+        while result['has_more']:
+            result = self.api_client.delta(cursor, path)
+            cursor = result['cursor']
+            if result['reset']:
+                print 'RESET'
+
+            for path, metadata in result['entries']:
+                if metadata is not None:
+                    print '%s was created/updated' % path
+                else:
+                    print '%s was deleted' % path
+
+        if had_changes:
+            return True
+
+        changes = False
+        # poll until there are changes
+        while not changes:
+            result = self.api_client.longpoll_delta(cursor, 120)
+
+            changes = result['changes']
+            if not changes:
+                print 'Timeout, polling again...'
+
+            backoff = result['backoff'] if 'backoff' in result else None
+            if backoff is not None:
+                print 'Backoff requested. Sleeping for %d seconds...' % backoff
+                time.sleep(backoff)
+                print 'Resuming polling...'
+
+        return self.poll()

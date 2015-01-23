@@ -32,12 +32,9 @@ class Slideshow:
         self.check_config()
         child = subprocess.Popen(["feh", "-FY", "-Sfilename", "-D", str(self.config.delay()), self.local_directory])
         while(True):
-            if(self.update_files()):
+            if(dbc.poll(self.remote_directory)):
                 child.kill()
                 child = subprocess.Popen(["feh", "-FY", "-Sfilename", "-D", str(self.config.delay()), self.local_directory])
-            if(self.check_config()):
-                child.kill()
-            sleep(self.config.update_interval())
 
     def update_files(self):
         """
