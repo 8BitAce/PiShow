@@ -15,7 +15,7 @@ class Slideshow:
             db_dir: The remote Dropbox directory containing the images.
         """
         self.dbc = dbc
-        self.remote_directory = db_dir
+        self.remote_directory = "/" + (db_dir[0:-1] if db_dir[-1] == "/" else db_dir)
         self.local_directory = local_dir
         self.file_set = set([f for f in os.listdir(self.local_directory) if os.path.isfile(os.path.join(self.local_directory,f))])
         self.config = Config()
@@ -32,7 +32,7 @@ class Slideshow:
         self.check_config()
         child = subprocess.Popen(["feh", "-FY", "-Sfilename", "-D", str(self.config.delay()), self.local_directory])
         while(True):
-            if(dbc.poll(self.remote_directory)):
+            if(self.dbc.poll(self.remote_directory)):
                 child.kill()
                 child = subprocess.Popen(["feh", "-FY", "-Sfilename", "-D", str(self.config.delay()), self.local_directory])
 

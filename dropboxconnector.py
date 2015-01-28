@@ -19,6 +19,7 @@ class DropboxConnector:
         self.local_directory = local_path
 
         self.api_client = None
+	self.cursor = None
         try:
             serialized_token = open(self.TOKEN_FILE).read()
             if serialized_token.startswith('oauth1:'):
@@ -126,13 +127,15 @@ class DropboxConnector:
 
     def poll(self, path):
         had_changes = False
-        cursor = None
-        result = self.api_client.delta(cursor, path)
-        cursor = result['cursor']
+        result = self.api_client.delta(self.cursor, path)
+        self.cursor = result['cursor']
+	with open('cursor.txt', 'rw') as file:
+            file.write(self.cursor)
+
         if result['reset']:
             print 'RESET'
 
-        if len(result['entries'] > 0):
+        if len(result['entries']) > 0:
             had_changes = True
 
         for path, metadata in result['entries']:
@@ -142,8 +145,8 @@ class DropboxConnector:
                 print '%s was deleted' % path
 
         while result['has_more']:
-            result = self.api_client.delta(cursor, path)
-            cursor = result['cursor']
+            result = self.api_client.delta(self.cursor, path)
+            self.cursor = result['cursor']
             if result['reset']:
                 print 'RESET'
 
@@ -159,7 +162,7 @@ class DropboxConnector:
         changes = False
         # poll until there are changes
         while not changes:
-            result = self.api_client.longpoll_delta(cursor, 120)
+            result = self.api_client.longpoll_delta(self.cursor, 120)
 
             changes = result['changes']
             if not changes:
@@ -171,4 +174,4 @@ class DropboxConnector:
                 time.sleep(backoff)
                 print 'Resuming polling...'
 
-        return self.poll()
+        return self.poll(path)
