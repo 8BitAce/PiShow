@@ -151,7 +151,7 @@ class DropboxConnector:
                 get_file(self.local_directory, filename)
             else:
                 print '%s was deleted' % path
-                os.rm(self.local_directory + "/" + filename)
+                os.remove(self.local_directory + "/" + filename)
 
         while result['has_more']:
             result = self.api_client.delta(self.cursor, path)
