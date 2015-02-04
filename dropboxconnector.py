@@ -19,7 +19,13 @@ class DropboxConnector:
         self.local_directory = local_path
 
         self.api_client = None
-	self.cursor = None
+        self.cursor = None
+        try:
+            curfile = open("cursor.txt", "r")
+            self.cursor = curfile.read()
+            curfile.close()
+        except IOError:
+            pass
         try:
             serialized_token = open(self.TOKEN_FILE).read()
             if serialized_token.startswith('oauth1:'):
@@ -129,7 +135,7 @@ class DropboxConnector:
         had_changes = False
         result = self.api_client.delta(self.cursor, path)
         self.cursor = result['cursor']
-	with open('cursor.txt', 'rw') as file:
+        with open('cursor.txt', 'rw') as file:
             file.write(self.cursor)
 
         if result['reset']:
