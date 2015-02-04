@@ -135,7 +135,7 @@ class DropboxConnector:
         had_changes = False
         result = self.api_client.delta(self.cursor, path)
         self.cursor = result['cursor']
-        with open('cursor.txt', 'rw') as file:
+        with open('cursor.txt', 'w') as file:
             file.write(self.cursor)
 
         if result['reset']:
