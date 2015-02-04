@@ -34,6 +34,7 @@ class Slideshow:
         while(True):
             if(self.dbc.poll(self.remote_directory)):
                 child.kill()
+                self.config.reload(self.local_directory + "/" + "config.txt")
                 child = subprocess.Popen(["feh", "-FY", "-Sfilename", "-D", str(self.config.delay()), self.local_directory])
 
     def update_files(self):

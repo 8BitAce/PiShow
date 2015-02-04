@@ -118,7 +118,7 @@ class DropboxConnector:
 
         f, metadata = self.api_client.get_file_and_metadata(self.current_path + "/" + filename)
         to_file.write(f.read())
-        
+
     def get_metadata(self, filename):
         """
         Gets a file's metadata from the current Dropbox directory.
@@ -145,10 +145,13 @@ class DropboxConnector:
             had_changes = True
 
         for path, metadata in result['entries']:
+            filename = path.split("/")[-1]
             if metadata is not None:
                 print '%s was created/updated' % path
+                get_file_abs(self.local_directory, filename)
             else:
                 print '%s was deleted' % path
+                os.rm(self.local_directory + "/" + filename)
 
         while result['has_more']:
             result = self.api_client.delta(self.cursor, path)
