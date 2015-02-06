@@ -1,5 +1,6 @@
 import locale
 import os
+import re
 import sys
 import time
 
@@ -153,7 +154,9 @@ class DropboxConnector:
                 get_file(self.local_directory, filename)
             else:
                 print '%s was deleted' % path
-                os.remove(self.local_directory + "/" + filename)
+                to_delete = [filename for filename in os.listdir(self.local_directory)
+                             if re.search(filename, filename, re.IGNORECASE)]
+                os.remove(self.local_directory + "/" + to_delete)
 
         # There are more results. Grab them too.
         while result['has_more']:
@@ -168,7 +171,9 @@ class DropboxConnector:
                     get_file(self.local_directory, filename)
                 else:
                     print '%s was deleted' % path
-                    os.remove(self.local_directory + "/" + filename)
+                    to_delete = [filename for filename in os.listdir(self.local_directory)
+                             if re.search(filename, filename, re.IGNORECASE)]
+                    os.remove(self.local_directory + "/" + to_delete)
 
         # There were immediate changes. Return True to let the caller know.
         if had_changes:
