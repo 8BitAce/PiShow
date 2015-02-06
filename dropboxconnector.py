@@ -156,7 +156,10 @@ class DropboxConnector:
                 print '%s was deleted' % path
                 to_delete = [filename for filename in os.listdir(self.local_directory)
                              if re.search(filename, filename, re.IGNORECASE)]
-                os.remove(self.local_directory + "/" + to_delete)
+                if len(to_delete) >= 1:
+                        os.remove(self.local_directory + "/" + to_delete[0])
+                else:
+                    print "Can't delete file. It doesn't exist!"
 
         # There are more results. Grab them too.
         while result['has_more']:
