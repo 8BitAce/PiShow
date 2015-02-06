@@ -20,6 +20,7 @@ class DropboxConnector:
 
         self.api_client = None
         self.cursor = None
+        #Try to read in the current cursor if it exists.
         try:
             curfile = open("cursor.txt", "r")
             self.cursor = curfile.read()
@@ -135,6 +136,7 @@ class DropboxConnector:
         had_changes = False
         result = self.api_client.delta(self.cursor, path)
         self.cursor = result['cursor']
+        #Write the cursor to a file to grab on next startup.
         with open('cursor.txt', 'w') as file:
             file.write(self.cursor)
 
@@ -153,6 +155,7 @@ class DropboxConnector:
                 print '%s was deleted' % path
                 os.remove(self.local_directory + "/" + filename)
 
+        #There are more results. Grab them too.
         while result['has_more']:
             result = self.api_client.delta(self.cursor, path)
             self.cursor = result['cursor']
@@ -162,9 +165,12 @@ class DropboxConnector:
             for path, metadata in result['entries']:
                 if metadata is not None:
                     print '%s was created/updated' % path
+                    get_file(self.local_directory, filename)
                 else:
                     print '%s was deleted' % path
+                    os.remove(self.local_directory + "/" + filename)
 
+        #There were immediate changes. Return True to let the caller know.
         if had_changes:
             return True
 
@@ -183,4 +189,5 @@ class DropboxConnector:
                 time.sleep(backoff)
                 print 'Resuming polling...'
 
+        #There were changes, so recursively call poll to grab them (and thus returning True)
         return self.poll(path)
