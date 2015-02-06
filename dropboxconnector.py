@@ -151,7 +151,7 @@ class DropboxConnector:
             filename = path.split("/")[-1]
             if metadata is not None:
                 print '%s was created/updated' % path
-                self.get_file(self.local_directory, filename)
+                self.get_file(filename)
             else:
                 print '%s was deleted' % path
                 to_delete = [filename for filename in os.listdir(self.local_directory)
@@ -168,7 +168,7 @@ class DropboxConnector:
             for path, metadata in result['entries']:
                 if metadata is not None:
                     print '%s was created/updated' % path
-                    get_file(self.local_directory, filename)
+                    self.get_file(filename)
                 else:
                     print '%s was deleted' % path
                     to_delete = [filename for filename in os.listdir(self.local_directory)
