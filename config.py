@@ -1,6 +1,7 @@
 import re
 import sys
 
+
 class Config:
     def __init__(self):
         self.dict = dict()
@@ -13,10 +14,9 @@ class Config:
             filename: The name of the config file.
         Returns: n/a
         """
-        config_file = None
         try:
             config_file = open(filename, "r")
-        except:
+        except IOError:
             print "No config in current directory"
             sys.exit()
 
@@ -35,4 +35,5 @@ class Config:
         return self.dict["delay"] if "delay" in self.dict.keys() else 10
 
     def update_interval(self):
-        return self.dict["update_interval"] if "update_interval" in self.dict.keys() else 60
+        return self.dict["update_interval"] \
+            if "update_interval" in self.dict.keys() else 60
