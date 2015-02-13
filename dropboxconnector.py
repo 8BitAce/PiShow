@@ -4,7 +4,8 @@ import re
 import sys
 import time
 
-from dropbox import client, session
+from dropbox import client, rest
+
 
 class DropboxConnector:
     TOKEN_FILE = "token_store.txt"
@@ -21,7 +22,7 @@ class DropboxConnector:
 
         self.api_client = None
         self.cursor = None
-        #Try to read in the current cursor if it exists.
+        # Try to read in the current cursor if it exists.
         try:
             curfile = open("cursor.txt", "r")
             self.cursor = curfile.read()
@@ -31,11 +32,6 @@ class DropboxConnector:
         try:
             serialized_token = open(self.TOKEN_FILE).read()
             if serialized_token.startswith('oauth1:'):
-                #access_key, access_secret = serialized_token[len('oauth1:'):].split(':', 1)
-                #sess = session.DropboxSession(self.app_key, self.app_secret)
-                #sess.set_token(access_key, access_secret)
-                #self.api_client = client.DropboxClient(sess)
-                #print "[loaded OAuth 1 access token]"
                 print "OAuth1 not supported."
                 sys.exit()
             elif serialized_token.startswith('oauth2:'):
@@ -55,9 +51,8 @@ class DropboxConnector:
         Parameters: n/a
         Returns: n/a
         """
-        key_file = None
         try:
-	       key_file = open("app_key.txt", "r")
+            key_file = open("app_key.txt", "r")
         except IOError:
             print "No app_key.txt. Exiting."
             sys.exit()
@@ -67,7 +62,8 @@ class DropboxConnector:
         flow = client.DropboxOAuth2FlowNoRedirect(app_key, app_secret)
         authorize_url = flow.start()
         sys.stdout.write("1. Go to: " + authorize_url + "\n")
-        sys.stdout.write("2. Click \"Allow\" (you might have to log in first).\n")
+        sys.stdout.write("2. Click \"Allow\" "
+                         "(you might have to log in first).\n")
         sys.stdout.write("3. Copy the authorization code.\n")
         code = raw_input("Enter the authorization code here: ").strip()
 
@@ -77,9 +73,9 @@ class DropboxConnector:
             sys.stdout.write('Error: %s\n' % str(e))
             return
 
-        with open(self.TOKEN_FILE, 'w') as f:
+        with open(cls.TOKEN_FILE, 'w') as f:
             f.write('oauth2:' + access_token)
-        #self.api_client = client.DropboxClient(access_token)
+        # self.api_client = client.DropboxClient(access_token)
 
     def get_file_list(self, directory):
         """
@@ -111,14 +107,15 @@ class DropboxConnector:
         Returns: The file
         Raises: dropbox.rest.ErrorResponse
         """
-        to_file = None
         try:
-            to_file = open(os.path.expanduser(self.local_directory + filename), "wb")
+            to_file = open(os.path.expanduser(self.local_directory + filename),
+                           "wb")
         except IOError:
             print self.local_directory + " is missing!"
             return
 
-        f, metadata = self.api_client.get_file_and_metadata(self.current_path + "/" + filename)
+        f, metadata = self.api_client.get_file_and_metadata(
+            self.current_path + "/" + filename)
         to_file.write(f.read())
 
     def get_metadata(self, filename):
@@ -130,7 +127,8 @@ class DropboxConnector:
         Returns: The file's metadata
         Raises: dropbox.rest.ErrorResponse
         """
-        f, metadata = self.api_client.get_file_and_metadata(self.current_path + "/" + filename)
+        f, metadata = self.api_client.get_file_and_metadata(
+            self.current_path + "/" + filename)
         return metadata
 
     def poll(self, path):
@@ -138,8 +136,8 @@ class DropboxConnector:
         result = self.api_client.delta(self.cursor, path)
         self.cursor = result['cursor']
         # Write the cursor to a file to grab on next startup.
-        with open('cursor.txt', 'w') as file:
-            file.write(self.cursor)
+        with open('cursor.txt', 'w') as mfile:
+            mfile.write(self.cursor)
 
         if result['reset']:
             print 'RESET'
@@ -154,7 +152,8 @@ class DropboxConnector:
                 self.get_file(filename)
             else:
                 print '%s was deleted' % path
-                to_delete = [filename for filename in os.listdir(self.local_directory)
+                to_delete = [filename for filename
+                             in os.listdir(self.local_directory)
                              if re.search(filename, filename, re.IGNORECASE)]
                 if len(to_delete) >= 1:
                         os.remove(self.local_directory + "/" + to_delete[0])
@@ -169,13 +168,16 @@ class DropboxConnector:
                 print 'RESET'
 
             for path, metadata in result['entries']:
+                filename = path.split("/")[-1]
                 if metadata is not None:
                     print '%s was created/updated' % path
                     self.get_file(filename)
                 else:
                     print '%s was deleted' % path
-                    to_delete = [filename for filename in os.listdir(self.local_directory)
-                             if re.search(filename, filename, re.IGNORECASE)]
+                    to_delete = [filename for filename
+                                 in os.listdir(self.local_directory)
+                                 if re.search(filename,
+                                              filename, re.IGNORECASE)]
                     if len(to_delete) >= 1:
                         os.remove(self.local_directory + "/" + to_delete[0])
                     else:
@@ -200,5 +202,6 @@ class DropboxConnector:
                 time.sleep(backoff)
                 print 'Resuming polling...'
 
-        # There were changes, so recursively call poll to grab them (and thus returning True)
+        # There were changes, so recursively call poll to grab them
+        # (and thus returning True)
         return self.poll(path)

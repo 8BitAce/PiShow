@@ -1,10 +1,10 @@
 import os
 import subprocess
-import sys
 
-from time import sleep
+from dropbox import rest
 
 from config import *
+
 
 class Slideshow:
     def __init__(self, dbc, local_dir, db_dir):
@@ -15,9 +15,13 @@ class Slideshow:
             db_dir: The remote Dropbox directory containing the images.
         """
         self.dbc = dbc
-        self.remote_directory = "/" + (db_dir[0:-1] if db_dir[-1] == "/" else db_dir)
+        self.remote_directory = "/" + (db_dir[0:-1]
+                                       if db_dir[-1] == "/"
+                                       else db_dir)
         self.local_directory = local_dir
-        self.file_set = set([f for f in os.listdir(self.local_directory) if os.path.isfile(os.path.join(self.local_directory,f))])
+        self.file_set = set([f for f in os.listdir(self.local_directory)
+                             if os.path.isfile(os.path.join(
+                                               self.local_directory, f))])
         self.config = Config()
         self.config_date = ""
 
@@ -30,12 +34,16 @@ class Slideshow:
         """
         self.update_files()
         self.check_config()
-        child = subprocess.Popen(["feh", "-FY", "-Sfilename", "-D", str(self.config.delay()), self.local_directory])
-        while(True):
-            if(self.dbc.poll(self.remote_directory)):
+        child = subprocess.Popen(["feh", "-FY", "-Sfilename", "-D",
+                                  str(self.config.delay()),
+                                  self.local_directory])
+        while True:
+            if self.dbc.poll(self.remote_directory):
                 child.kill()
                 self.config.reload(self.local_directory + "/" + "config.txt")
-                child = subprocess.Popen(["feh", "-FY", "-Sfilename", "-D", str(self.config.delay()), self.local_directory])
+                child = subprocess.Popen(["feh", "-FY", "-Sfilename", "-D",
+                                          str(self.config.delay()),
+                                          self.local_directory])
 
     def update_files(self):
         """
@@ -64,7 +72,7 @@ class Slideshow:
             for filename in old_files:
                 try:
                     os.remove(self.local_directory + "/" + filename)
-                except:
+                except OSError:
                     pass
             print "Fileset changed:"
             print self.file_set
@@ -84,7 +92,7 @@ class Slideshow:
         except rest.ErrorResponse:
             print "No config.txt in Dropbox directory. Exiting."
             sys.exit()
-        if(config_metadata["modified"] != self.config_date):
+        if config_metadata["modified"] != self.config_date:
             print "Config changed"
             self.config_date = config_metadata["modified"]
             try:
