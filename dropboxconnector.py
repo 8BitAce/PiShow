@@ -147,6 +147,9 @@ class DropboxConnector:
 
         for path, metadata in result['entries']:
             filename = path.split("/")[-1]
+            leading_path = path.split("/")[0:-1]
+            if leading_path != self.current_path:
+                continue
             if metadata is not None:
                 print '%s was created/updated' % path
                 self.get_file(filename)
