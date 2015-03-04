@@ -145,7 +145,10 @@ class DropboxConnector:
         if len(result['entries']) > 0:
             had_changes = True
 
+        mpath = path
         for path, metadata in result['entries']:
+            if path == mpath:
+                continue
             filename = path.split("/")[-1]
             if metadata is not None:
                 print '%s was created/updated' % path
