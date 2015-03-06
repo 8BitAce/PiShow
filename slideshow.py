@@ -60,9 +60,8 @@ class Slideshow:
         try:
             db_files = self.dbc.get_file_list(self.remote_directory)
         except rest.ErrorResponse as e:
-            print e.reason
-        if db_files is None:
             print "Could not get remote file list."
+            print e.reason
             return False
         new_files = set(db_files) - self.file_set
         old_files = self.file_set - set(db_files)
