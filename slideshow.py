@@ -2,6 +2,7 @@ import os
 import subprocess
 
 from dropbox import rest
+from urllib3.exceptions import MaxRetryError
 
 from config import *
 
@@ -38,12 +39,15 @@ class Slideshow:
                                   str(self.config.delay()),
                                   self.local_directory])
         while True:
-            if self.dbc.poll(self.remote_directory):
-                child.kill()
-                self.config.reload(self.local_directory + "/" + "config.txt")
-                child = subprocess.Popen(["feh", "-FY", "-Sfilename", "-D",
-                                          str(self.config.delay()),
-                                          self.local_directory])
+            try:
+                if self.dbc.poll(self.remote_directory):
+                    child.kill()
+                    self.config.reload(self.local_directory + "/" + "config.txt")
+                    child = subprocess.Popen(["feh", "-FY", "-Sfilename", "-D",
+                                              str(self.config.delay()),
+                                              self.local_directory])
+            except MaxRetryError as e:
+                print e
 
     def update_files(self):
         """
@@ -56,9 +60,8 @@ class Slideshow:
         try:
             db_files = self.dbc.get_file_list(self.remote_directory)
         except rest.ErrorResponse as e:
-            print e.reason
-        if db_files is None:
             print "Could not get remote file list."
+            print e.reason
             return False
         new_files = set(db_files) - self.file_set
         old_files = self.file_set - set(db_files)
