@@ -1,5 +1,5 @@
-from dropboxconnector import *
-from slideshow import *
+from pishow.dropboxconnector import *
+from pishow.slideshow import *
 
 
 def main(argv):

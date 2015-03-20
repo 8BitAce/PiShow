@@ -1,2 +1,2 @@
 #!/bin/bash
-/usr/bin/python2 -u pishow.py auth
+/usr/bin/python2 -u pishow/pishow.py auth

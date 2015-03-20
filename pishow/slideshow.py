@@ -4,7 +4,7 @@ import subprocess
 from dropbox import rest
 from urllib3.exceptions import MaxRetryError
 
-from config import *
+from pishow.config import *
 
 
 class Slideshow:
