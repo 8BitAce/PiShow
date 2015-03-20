@@ -8,7 +8,9 @@ from dropbox import client, rest
 
 
 class DropboxConnector:
-    TOKEN_FILE = "token_store.txt"
+    TOKEN_FILE = "../token_store.txt"
+    CURSOR_FILE = "../cursor.txt"
+    APPKEY_FILE = "../app_key.txt"
 
     def __init__(self, local_path, db_path):
         """
@@ -24,7 +26,7 @@ class DropboxConnector:
         self.cursor = None
         # Try to read in the current cursor if it exists.
         try:
-            curfile = open("cursor.txt", "r")
+            curfile = open(self.CURSOR_FILE, "r")
             self.cursor = curfile.read()
             curfile.close()
         except IOError:
@@ -52,7 +54,7 @@ class DropboxConnector:
         Returns: n/a
         """
         try:
-            key_file = open("app_key.txt", "r")
+            key_file = open(cls.APPKEY_FILE, "r")
         except IOError:
             print "No app_key.txt. Exiting."
             sys.exit()
@@ -136,7 +138,7 @@ class DropboxConnector:
         result = self.api_client.delta(self.cursor, path)
         self.cursor = result['cursor']
         # Write the cursor to a file to grab on next startup.
-        with open('cursor.txt', 'w') as mfile:
+        with open(self.CURSOR_FILE, 'w') as mfile:
             mfile.write(self.cursor)
 
         if result['reset']:
