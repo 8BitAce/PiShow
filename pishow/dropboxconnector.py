@@ -8,9 +8,9 @@ from dropbox import client, rest
 
 
 class DropboxConnector:
-    TOKEN_FILE = "../token_store.txt"
-    CURSOR_FILE = "../cursor.txt"
-    APPKEY_FILE = "../app_key.txt"
+    TOKEN_FILE = "token_store.txt"
+    CURSOR_FILE = "cursor.txt"
+    APPKEY_FILE = "app_key.txt"
 
     def __init__(self, local_path, db_path):
         """
