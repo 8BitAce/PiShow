@@ -49,6 +49,9 @@ class Slideshow:
             except MaxRetryError as e:
                 print e
 
+            except ErrorResponse as e:
+		print e
+
     def update_files(self):
         """
         Updates fileset from Dropbox if it has changed.
