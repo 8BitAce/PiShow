@@ -49,7 +49,7 @@ class Slideshow:
             except MaxRetryError as e:
                 print e
 
-            except ErrorResponse as e:
+            except rest.ErrorResponse as e:
 		print e
 
     def update_files(self):
