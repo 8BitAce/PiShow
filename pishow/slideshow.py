@@ -47,7 +47,7 @@ class Slideshow:
                                               str(self.config.delay()),
                                               self.local_directory])
             except MaxRetryError as e:
-                print e
+                pass
 
             except rest.ErrorResponse as e:
 		print e
