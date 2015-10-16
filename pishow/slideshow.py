@@ -13,7 +13,7 @@ from config import *
 
 
 NOTIFY_EMAILS = ["keith.scheiwiller@gmail.com"]
-SMTP_SERVER = "mail.depaul.edu"
+SMTP_SERVER = "smtp.depaul.edu"
 SMTP_USER = None
 SMTP_PASSWORD = None
 
