@@ -1,3 +1,4 @@
+import datetime
 import os
 import subprocess
 
@@ -50,10 +51,10 @@ class Slideshow:
                 pass
 
             except rest.ErrorResponse as e:
-                print e
+                print str(datetime.datetime.now()) + ": " + e
 
             except Exception as e:
-                print e
+                print str(datetime.datetime.now()) + ": " + e
 
     def update_files(self):
         """
@@ -66,7 +67,8 @@ class Slideshow:
         try:
             db_files = self.dbc.get_file_list(self.remote_directory)
         except rest.ErrorResponse as e:
-            print "Could not get remote file list."
+            print str(datetime.datetime.now()) \
+                + ": Could not get remote file list."
             print e.reason
             return False
         new_files = set(db_files) - self.file_set
@@ -83,7 +85,7 @@ class Slideshow:
                     os.remove(self.local_directory + "/" + filename)
                 except OSError:
                     pass
-            print "Fileset changed:"
+            print str(datetime.datetime.now()) + ": Fileset changed:"
             print self.file_set
             return True
         return False
@@ -99,10 +101,11 @@ class Slideshow:
         try:
             config_metadata = self.dbc.get_metadata("config.txt")
         except rest.ErrorResponse:
-            print "No config.txt in Dropbox directory. Exiting."
+            print str(datetime.datetime.now()) \
+                + ": No config.txt in Dropbox directory. Exiting."
             sys.exit()
         if config_metadata["modified"] != self.config_date:
-            print "Config changed"
+            print str(datetime.datetime.now()) + ": Config changed"
             self.config_date = config_metadata["modified"]
             try:
                 self.dbc.get_file("config.txt")
