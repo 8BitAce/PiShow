@@ -153,7 +153,7 @@ class DropboxConnector:
                 continue
             if metadata is not None:
                 mfilename = metadata["path"].split("/")[-1]
-		print '%s was created/updated' % path
+                print '%s was created/updated' % path
                 self.get_file(mfilename)
             else:
                 print '%s was deleted' % path
@@ -161,8 +161,8 @@ class DropboxConnector:
                              in os.listdir(self.local_directory)
                              if re.search(path.split("/")[-1], filename, re.IGNORECASE)]
                 if len(to_delete) >= 1:
-			print "Deleting: " + to_delete[0]
-                        os.remove(self.local_directory + "/" + to_delete[0])
+                    print "Deleting: " + to_delete[0]
+                    os.remove(self.local_directory + "/" + to_delete[0])
                 else:
                     print "Can't delete file. It doesn't exist!"
 
