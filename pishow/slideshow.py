@@ -50,7 +50,7 @@ class Slideshow:
                 pass
 
             except rest.ErrorResponse as e:
-		print e
+                print e
 
             except Exception as e:
                 print e
