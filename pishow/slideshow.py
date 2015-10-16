@@ -1,11 +1,48 @@
 import datetime
 import os
 import subprocess
+import smtplib
+import socket
 
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from dropbox import rest
 from urllib3.exceptions import MaxRetryError
 
 from config import *
+
+
+NOTIFY_EMAILS = ["keith.scheiwiller@gmail.com"]
+SMTP_SERVER = "mail.depaul.edu"
+SMTP_USER = None
+SMTP_PASSWORD = None
+
+
+def email_changes(new_files, deleted_files):
+    hostname = str(socket.gethostname())
+
+    msg = MIMEMultipart()
+    msg['Subject'] = 'Slides changed on %s' % hostname
+    msg['To'] = ', '.join(NOTIFY_EMAILS)
+    msg['From'] = "p2b@localhost"
+    msg.preamble = 'You will not see this in a MIME-aware mail reader.\n'
+
+    # Create and add body
+    body = "The following files were ADDED to %s:\n" % hostname
+    for nfile in new_files:
+        body += " - %s\n" % nfile
+    body = "The following files were REMOVED to %s:\n" % hostname
+    for ofile in deleted_files:
+        body += " - %s\n" % ofile
+    part1 = MIMEText(body, 'plain')
+    msg.attach(part1)
+
+    # Send the email using SMTP
+    s = smtplib.SMTP(SMTP_SERVER, 25)
+    if SMTP_USER and SMTP_PASSWORD:
+        s.login(SMTP_USER, SMTP_PASSWORD)
+    s.sendmail("p2b@localhost", NOTIFY_EMAILS, msg.as_string())
+    s.quit()
 
 
 class Slideshow:
@@ -87,6 +124,7 @@ class Slideshow:
                     pass
             print str(datetime.datetime.now()) + ": Fileset changed:"
             print self.file_set
+            email_changes(new_files, old_files)
             return True
         return False
 
