@@ -88,10 +88,10 @@ class Slideshow:
                 pass
 
             except rest.ErrorResponse as e:
-                print str(datetime.datetime.now()) + ": " + e
+                print str(datetime.datetime.now()) + ": " + str(e)
 
             except Exception as e:
-                print str(datetime.datetime.now()) + ": " + e
+                print str(datetime.datetime.now()) + ": " + str(e)
 
     def update_files(self):
         """
