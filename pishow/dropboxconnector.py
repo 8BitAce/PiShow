@@ -4,6 +4,8 @@ import re
 import sys
 import time
 
+from slideshow import email_changes
+
 from dropbox import client, rest
 
 
@@ -11,6 +13,10 @@ class DropboxConnector:
     TOKEN_FILE = "token_store.txt"
     CURSOR_FILE = "cursor.txt"
     APPKEY_FILE = "app_key.txt"
+
+    last_email_time = 0
+    added_files = []
+    removed_files = []
 
     def __init__(self, local_path, db_path):
         """
@@ -178,6 +184,7 @@ class DropboxConnector:
                 if metadata is not None:
                     print '%s was created/updated' % path
                     self.get_file(filename)
+                    self.added_files += [filename]
                 else:
                     print '%s was deleted' % path
                     to_delete = [filename for filename
@@ -186,11 +193,18 @@ class DropboxConnector:
                                               filename, re.IGNORECASE)]
                     if len(to_delete) >= 1:
                         os.remove(self.local_directory + "/" + to_delete[0])
+                        self.removed_files += to_delete[0]
                     else:
                         print "Can't delete file. It doesn't exist!"
 
         # There were immediate changes. Return True to let the caller know.
         if had_changes:
+            now = time.time()
+            if (now - self.last_email_time) > (60 * 60 * 5):
+                email_changes(self.added_files, self.removed_files)
+                self.added_files = []
+                self.removed_files = []
+                self.last_email_time = now
             return True
 
         changes = False
