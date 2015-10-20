@@ -31,7 +31,7 @@ def email_changes(new_files, deleted_files):
     body = "The following files were ADDED to %s:\n" % hostname
     for nfile in new_files:
         body += " - %s\n" % nfile
-    body = "The following files were REMOVED to %s:\n" % hostname
+    body += "The following files were REMOVED from %s:\n" % hostname
     for ofile in deleted_files:
         body += " - %s\n" % ofile
     part1 = MIMEText(body, 'plain')
