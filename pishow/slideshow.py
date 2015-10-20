@@ -125,6 +125,8 @@ class Slideshow:
             print str(datetime.datetime.now()) + ": Fileset changed:"
             print self.file_set
             email_changes(new_files, old_files)
+            print str(datetime.datetime.now()) \
+                + ": Email sent from update_files()."
             return True
         return False
 

@@ -1,3 +1,4 @@
+import datetime
 import locale
 import os
 import re
@@ -199,12 +200,14 @@ class DropboxConnector:
 
         # There were immediate changes. Return True to let the caller know.
         if had_changes:
-            now = time.time()
+            now = int(time.time())
             if (now - self.last_email_time) > (60 * 60 * 5):
                 email_changes(self.added_files, self.removed_files)
                 self.added_files = []
                 self.removed_files = []
                 self.last_email_time = now
+                print str(datetime.datetime.now()) \
+                    + ": Email sent from poll()."
             return True
 
         changes = False
