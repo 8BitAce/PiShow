@@ -171,7 +171,7 @@ class DropboxConnector:
                 if len(to_delete) >= 1:
                     print "Deleting: " + to_delete[0]
                     os.remove(self.local_directory + "/" + to_delete[0])
-                    self.removed_files += to_delete[0]
+                    self.removed_files += [to_delete[0]]
                 else:
                     print "Can't delete file. It doesn't exist!"
 
@@ -196,7 +196,7 @@ class DropboxConnector:
                                               filename, re.IGNORECASE)]
                     if len(to_delete) >= 1:
                         os.remove(self.local_directory + "/" + to_delete[0])
-                        self.removed_files += to_delete[0]
+                        self.removed_files += [to_delete[0]]
                     else:
                         print "Can't delete file. It doesn't exist!"
 
