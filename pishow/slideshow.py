@@ -116,7 +116,7 @@ class Slideshow:
                 try:
                     self.dbc.get_file(filename)
                 except rest.ErrorResponse as e:
-                    print e.reason
+                    print str(datetime.datetime.now()) + e.reason
             for filename in old_files:
                 try:
                     os.remove(self.local_directory + "/" + filename)
@@ -150,7 +150,7 @@ class Slideshow:
             try:
                 self.dbc.get_file("config.txt")
             except rest.ErrorResponse as e:
-                print e.reason
+                print str(datetime.datetime.now()) + e.reason
                 return False
             self.config.reload(self.local_directory + "/" + "config.txt")
             return True
